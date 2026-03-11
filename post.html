@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Post — OnlineBloggers</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--purple:#7C3AED;--pink:#EC4899;--cyan:#06B6D4;--dark:#0F0F1A;--light:#F8F7FF;--white:#fff;--border:#E8E4F8;--mid:#6B7280}
+body{font-family:'Manrope',sans-serif;background:var(--light);color:var(--dark)}
+header{background:var(--dark);position:sticky;top:0;z-index:100}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 28px;height:66px;display:flex;align-items:center;justify-content:space-between}
+.logo{text-decoration:none;display:flex;align-items:center;gap:10px}
+.logo-dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--pink))}
+.logo-text{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff}
+.logo-text span{background:linear-gradient(135deg,var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+nav a{text-decoration:none;color:rgba(255,255,255,0.5);font-size:13px;font-weight:600;padding:7px 14px;border-radius:6px;transition:all 0.2s;margin-left:4px}
+nav a:hover{color:#fff;background:rgba(255,255,255,0.08)}
+.post-hero{background:var(--dark);padding:70px 28px;position:relative;overflow:hidden}
+.hero-glow{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,0.12),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%)}
+.post-hero-inner{max-width:800px;margin:0 auto;position:relative}
+.post-cat{display:inline-flex;align-items:center;gap:8px;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);padding:5px 14px;border-radius:100px;margin-bottom:20px}
+.post-cat-text{font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--purple);text-transform:uppercase}
+.post-title{font-family:'Syne',sans-serif;font-size:52px;font-weight:800;color:#fff;line-height:1.05;letter-spacing:-2px;margin-bottom:24px}
+.post-author-row{display:flex;align-items:center;gap:12px}
+.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--pink));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px}
+.author-info{font-size:13px;color:rgba(255,255,255,0.6)}
+.author-info strong{color:rgba(255,255,255,0.9);display:block;font-size:14px;font-weight:600}
+.layout{max-width:1060px;margin:48px auto;padding:0 28px;display:grid;grid-template-columns:1fr 260px;gap:28px}
+.main-col{background:var(--white);padding:40px;border:1px solid var(--border);border-radius:12px}
+.back-btn{display:inline-flex;align-items:center;gap:8px;color:var(--purple);text-decoration:none;font-size:12px;font-weight:700;margin-bottom:32px;padding:8px 16px;border:1px solid rgba(124,58,237,0.2);border-radius:6px;background:rgba(124,58,237,0.05);letter-spacing:0.5px;transition:all 0.2s}
+.back-btn:hover{background:rgba(124,58,237,0.1)}
+.article-body{font-size:17px;line-height:1.92;color:#374151;font-weight:300}
+.article-body p{margin-bottom:26px}
+.article-body h2{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--dark);margin:48px 0 16px;letter-spacing:-0.5px;background:linear-gradient(135deg,var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.article-body h3{font-size:19px;font-weight:700;color:var(--dark);margin:32px 0 10px}
+.article-body a{color:var(--purple);font-weight:600;text-decoration:none;border-bottom:1px solid rgba(124,58,237,0.3)}
+.article-body a:hover{color:var(--pink);border-color:var(--pink)}
+.article-body ul,.article-body ol{padding-left:24px;margin-bottom:22px}
+.article-body li{margin-bottom:8px;line-height:1.7}
+blockquote{background:linear-gradient(135deg,rgba(124,58,237,0.06),rgba(236,72,153,0.06));border-left:3px solid var(--purple);padding:22px 28px;margin:32px 0;font-size:18px;font-style:italic;color:var(--mid);border-radius:0 8px 8px 0}
+.sidebar{display:flex;flex-direction:column;gap:16px}
+.widget{background:var(--white);border:1px solid var(--border);padding:22px;border-radius:12px}
+.widget-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--dark);margin-bottom:16px;letter-spacing:-0.3px}
+.recent-item{padding:12px 0;border-bottom:1px solid var(--border);font-size:13px}
+.recent-item:last-child{border-bottom:none}
+.recent-item a{color:var(--dark);text-decoration:none;font-weight:600;display:block;margin-bottom:3px;line-height:1.4}
+.recent-item a:hover{color:var(--purple)}
+.recent-item span{font-size:11px;color:#C4B5FD}
+.not-found{text-align:center;padding:80px;color:var(--mid);grid-column:1/-1}
+.not-found h2{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--dark);margin-bottom:10px}
+footer{background:var(--dark);text-align:center;padding:28px;font-size:12px;color:rgba(255,255,255,0.25);margin-top:60px}
+footer a{color:rgba(255,255,255,0.3);text-decoration:none;margin:0 8px}
+footer a:hover{color:var(--purple)}
+.fl{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#fff;margin-bottom:8px}
+.fl span{background:linear-gradient(135deg,var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="logo"><div class="logo-dot"></div><div class="logo-text">Online<span>Bloggers</span></div></a>
+    <nav><a href="index.html">← Back</a><a href="index.html">Home</a></nav>
+  </div>
+</header>
+<div id="post-hero" class="post-hero" style="display:none">
+  <div class="hero-glow"></div>
+  <div class="post-hero-inner">
+    <div class="post-cat"><span class="post-cat-text" id="post-cat">General</span></div>
+    <div class="post-title" id="post-title"></div>
+    <div class="post-author-row">
+      <div class="avatar" id="post-avatar">R</div>
+      <div class="author-info"><strong id="post-author">Editor</strong><span id="post-date-read"></span></div>
+    </div>
+  </div>
+</div>
+<div class="layout">
+  <div class="main-col">
+    <a href="index.html" class="back-btn">← All Posts</a>
+    <div id="article-body" class="article-body"></div>
+    <div id="not-found" class="not-found" style="display:none"><h2>Post not found</h2><p>This article doesn't exist.</p></div>
+  </div>
+  <aside class="sidebar">
+    <div class="widget"><div class="widget-title">✨ Recent Posts</div><div id="recent-posts"></div></div>
+    <div class="widget"><div class="widget-title">About</div><p style="font-size:13px;line-height:1.7;color:#666;font-weight:300">OnlineBloggers is a community platform for writers sharing ideas and stories with the world.</p></div>
+  </aside>
+</div>
+<footer><div class="fl">Online<span>Bloggers</span></div><p>&copy; 2026 OnlineBloggers &nbsp;·&nbsp;<a href="#">Privacy</a>&nbsp;·&nbsp;<a href="#">Terms</a></p></footer>
+<script>
+const params=new URLSearchParams(window.location.search);
+const id=params.get('id');
+const posts=JSON.parse(localStorage.getItem('db_posts')||'[]');
+const post=posts.find(p=>p.id==id);
+if(post){
+  document.title=post.title+' — OnlineBloggers';
+  document.getElementById('post-title').textContent=post.title;
+  document.getElementById('post-cat').textContent=post.category||'General';
+  document.getElementById('post-author').textContent=post.author||'Editor';
+  document.getElementById('post-avatar').textContent=(post.author||'E').charAt(0).toUpperCase();
+  const words=post.content.replace(/<[^>]+>/g,'').split(' ').length;
+  const readTime=Math.max(1,Math.round(words/200))+' min read';
+  const date=new Date(post.date).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('post-date-read').textContent=date+' · '+readTime;
+  document.getElementById('article-body').innerHTML=post.content;
+  document.getElementById('post-hero').style.display='block';
+  const rp=document.getElementById('recent-posts');
+  posts.slice(-4).reverse().forEach(p=>{
+    if(p.id==id)return;
+    rp.innerHTML+=`<div class="recent-item"><a href="post.html?id=${p.id}">${p.title}</a><span>${new Date(p.date).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span></div>`;
+  });
+}else{document.getElementById('not-found').style.display='block';}
+</script>
+</body>
+</html>
