@@ -6,6 +6,7 @@
 <title>OnlineBloggers — Write. Share. Connect.</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
+/* Keep ALL your existing styles - they're perfect! */
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--purple:#7C3AED;--pink:#EC4899;--cyan:#06B6D4;--dark:#0F0F1A;--card:#1A1A2E;--light:#F8F7FF;--white:#fff;--border:#E8E4F8;--mid:#6B7280}
 body{font-family:'Manrope',sans-serif;background:var(--light);color:var(--dark)}
@@ -124,7 +125,7 @@ footer{background:var(--dark);margin-top:60px}
     <a href="index.html" class="see-all">See all →</a>
   </div>
   <div class="grid" id="posts-grid">
-    <div class="empty"><h3>No posts yet</h3><p>Articles will appear here soon.</p></div>
+    <div class="empty"><h3>Loading posts...</h3><p>Please wait a moment.</p></div>
   </div>
 </div>
 <footer>
@@ -136,32 +137,102 @@ footer{background:var(--dark);margin-top:60px}
   <div class="footer-bottom">&copy; 2026 OnlineBloggers &nbsp;·&nbsp;<a href="#">Privacy</a>&nbsp;·&nbsp;<a href="#">Terms</a></div>
 </footer>
 <a href="admin.html" class="admin-link">⚙ Admin</a>
+
 <script>
-const grads=['g1','g2','g3','g4','g5','g6'];
-const avs=['av1','av2','av3','av4','av5','av6'];
-const initials=['A','B','C','D','E','F'];
-function loadPosts(){
-  const posts=JSON.parse(localStorage.getItem('db_posts')||'[]');
-  const grid=document.getElementById('posts-grid');
-  if(!posts.length)return;
-  grid.innerHTML='';
-  posts.slice().reverse().forEach((p,i)=>{
-    const g=grads[i%grads.length],av=avs[i%avs.length],init=initials[i%initials.length];
-    const date=new Date(p.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-    const excerpt=p.content.replace(/<[^>]+>/g,'').substring(0,110)+'...';
-    const words=p.content.replace(/<[^>]+>/g,'').split(' ').length;
-    const readTime=Math.max(1,Math.round(words/200))+' min read';
-    grid.innerHTML+=`<div class="card" onclick="location.href='post.html?id=${p.id}'">
-      <div class="card-img"><div class="card-img-bg ${g}"></div><span class="card-cat">${p.category||'General'}</span></div>
+const grads = ['g1','g2','g3','g4','g5','g6'];
+const avs = ['av1','av2','av3','av4','av5','av6'];
+const SITE_NAME = 'onlinebloggers';
+const GIST_ID = '42ea11087f40fdba423f8eb0f575ac96'; // Same Gist for all sites!
+
+async function loadPosts() {
+  const grid = document.getElementById('posts-grid');
+  
+  try {
+    console.log('Fetching from Gist ID:', GIST_ID);
+    
+    // Use raw URL - this ALWAYS works!
+    const rawUrl = `https://gist.githubusercontent.com/Hamzamain-spec/${GIST_ID}/raw/posts.json`;
+    const response = await fetch(rawUrl);
+    
+    if (response.ok) {
+      const allPosts = await response.json();
+      console.log('All posts from Gist:', allPosts);
+      
+      // Filter by site name
+      const sitePosts = allPosts.filter(post => post.site === SITE_NAME);
+      console.log(`Found ${sitePosts.length} posts for site: ${SITE_NAME}`);
+      
+      displayPosts(sitePosts);
+    } else {
+      console.error('Failed to fetch from Gist:', response.status);
+      grid.innerHTML = '<div class="empty"><h3>Error loading posts</h3><p>Please try again later.</p></div>';
+    }
+  } catch (error) {
+    console.error('Error loading posts:', error);
+    grid.innerHTML = '<div class="empty"><h3>Error</h3><p>' + error.message + '</p></div>';
+  }
+}
+
+function displayPosts(posts) {
+  const grid = document.getElementById('posts-grid');
+  
+  if (!posts || posts.length === 0) {
+    grid.innerHTML = '<div class="empty"><h3>No posts yet</h3><p>Articles will appear here soon.</p></div>';
+    return;
+  }
+  
+  grid.innerHTML = '';
+  
+  // Sort by date (newest first)
+  const sortedPosts = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
+  
+  sortedPosts.forEach((p, i) => {
+    const g = grads[i % grads.length];
+    const av = avs[i % avs.length];
+    const date = new Date(p.date).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+    const excerpt = p.content.replace(/<[^>]+>/g, '').substring(0, 110) + '...';
+    const words = p.content.replace(/<[^>]+>/g, '').split(' ').length;
+    const readTime = Math.max(1, Math.round(words / 200)) + ' min read';
+    
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.onclick = () => location.href = `post.html?id=${p.id}`;
+    
+    card.innerHTML = `
+      <div class="card-img">
+        <div class="card-img-bg ${g}"></div>
+        <span class="card-cat">${p.category || 'General'}</span>
+      </div>
       <div class="card-body">
-        <div class="card-author"><div class="avatar ${av}">${(p.author||'R').charAt(0).toUpperCase()}</div><span class="card-author-name">${p.author||'Editor'}</span><span class="card-author-date">${date}</span></div>
+        <div class="card-author">
+          <div class="avatar ${av}">${(p.author || 'R').charAt(0).toUpperCase()}</div>
+          <span class="card-author-name">${p.author || 'Editor'}</span>
+          <span class="card-author-date">${date}</span>
+        </div>
         <div class="card-title">${p.title}</div>
         <div class="card-excerpt">${excerpt}</div>
-        <div class="card-footer"><a class="card-link" href="post.html?id=${p.id}">Read more →</a><span class="card-read-time">⏱ ${readTime}</span></div>
-      </div></div>`;
+        <div class="card-footer">
+          <a class="card-link" href="post.html?id=${p.id}">Read more →</a>
+          <span class="card-read-time">⏱ ${readTime}</span>
+        </div>
+      </div>
+    `;
+    
+    grid.appendChild(card);
   });
+  
+  console.log(`Displayed ${posts.length} posts`);
 }
+
+// Load posts when page loads
 loadPosts();
+
+// Auto-refresh every 30 seconds
+setInterval(loadPosts, 30000);
 </script>
 </body>
 </html>
