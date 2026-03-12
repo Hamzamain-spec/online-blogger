@@ -6,6 +6,7 @@
 <title>Post — OnlineBloggers</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
+/* Keep ALL your existing styles - they're perfect! */
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--purple:#7C3AED;--pink:#EC4899;--cyan:#06B6D4;--dark:#0F0F1A;--light:#F8F7FF;--white:#fff;--border:#E8E4F8;--mid:#6B7280}
 body{font-family:'Manrope',sans-serif;background:var(--light);color:var(--dark)}
@@ -87,29 +88,74 @@ footer a:hover{color:var(--purple)}
   </aside>
 </div>
 <footer><div class="fl">Online<span>Bloggers</span></div><p>&copy; 2026 OnlineBloggers &nbsp;·&nbsp;<a href="#">Privacy</a>&nbsp;·&nbsp;<a href="#">Terms</a></p></footer>
+
 <script>
-const params=new URLSearchParams(window.location.search);
-const id=params.get('id');
-const posts=JSON.parse(localStorage.getItem('db_posts')||'[]');
-const post=posts.find(p=>p.id==id);
-if(post){
-  document.title=post.title+' — OnlineBloggers';
-  document.getElementById('post-title').textContent=post.title;
-  document.getElementById('post-cat').textContent=post.category||'General';
-  document.getElementById('post-author').textContent=post.author||'Editor';
-  document.getElementById('post-avatar').textContent=(post.author||'E').charAt(0).toUpperCase();
-  const words=post.content.replace(/<[^>]+>/g,'').split(' ').length;
-  const readTime=Math.max(1,Math.round(words/200))+' min read';
-  const date=new Date(post.date).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
-  document.getElementById('post-date-read').textContent=date+' · '+readTime;
-  document.getElementById('article-body').innerHTML=post.content;
-  document.getElementById('post-hero').style.display='block';
-  const rp=document.getElementById('recent-posts');
-  posts.slice(-4).reverse().forEach(p=>{
-    if(p.id==id)return;
-    rp.innerHTML+=`<div class="recent-item"><a href="post.html?id=${p.id}">${p.title}</a><span>${new Date(p.date).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span></div>`;
-  });
-}else{document.getElementById('not-found').style.display='block';}
+const params = new URLSearchParams(window.location.search);
+const id = params.get('id');
+const SITE_NAME = 'onlinebloggers';
+const GIST_ID = '42ea11087f40fdba423f8eb0f575ac96'; // Same Gist for all sites!
+
+async function loadPost() {
+  try {
+    console.log('Fetching post from Gist ID:', GIST_ID);
+    console.log('Looking for post ID:', id);
+    
+    // Use raw URL
+    const rawUrl = `https://gist.githubusercontent.com/Hamzamain-spec/${GIST_ID}/raw/posts.json`;
+    const response = await fetch(rawUrl);
+    
+    if (response.ok) {
+      const allPosts = await response.json();
+      console.log('All posts:', allPosts);
+      
+      // Filter by site name
+      const sitePosts = allPosts.filter(post => post.site === SITE_NAME);
+      console.log(`Found ${sitePosts.length} posts for site: ${SITE_NAME}`);
+      
+      const post = sitePosts.find(p => p.id == id);
+      console.log('Found post:', post);
+      
+      if (post) {
+        document.title = post.title + ' — OnlineBloggers';
+        document.getElementById('post-title').textContent = post.title;
+        document.getElementById('post-cat').textContent = post.category || 'General';
+        document.getElementById('post-author').textContent = post.author || 'Editor';
+        document.getElementById('post-avatar').textContent = (post.author || 'E').charAt(0).toUpperCase();
+        
+        const words = post.content.replace(/<[^>]+>/g, '').split(' ').length;
+        const readTime = Math.max(1, Math.round(words / 200)) + ' min read';
+        const date = new Date(post.date).toLocaleDateString('en-US', {
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric'
+        });
+        document.getElementById('post-date-read').textContent = date + ' · ' + readTime;
+        
+        document.getElementById('article-body').innerHTML = post.content;
+        document.getElementById('post-hero').style.display = 'block';
+        
+        // Recent posts
+        const rp = document.getElementById('recent-posts');
+        rp.innerHTML = '';
+        sitePosts.slice(-4).reverse().forEach(p => {
+          if (p.id == id) return;
+          rp.innerHTML += `<div class="recent-item"><a href="post.html?id=${p.id}">${p.title}</a><span>${new Date(p.date).toLocaleDateString('en-US', {month:'short',day:'numeric'})}</span></div>`;
+        });
+      } else {
+        console.log('Post not found for ID:', id);
+        document.getElementById('not-found').style.display = 'block';
+      }
+    } else {
+      console.error('Failed to fetch from Gist:', response.status);
+      document.getElementById('not-found').style.display = 'block';
+    }
+  } catch (error) {
+    console.error('Error loading post:', error);
+    document.getElementById('not-found').style.display = 'block';
+  }
+}
+
+loadPost();
 </script>
 </body>
 </html>
